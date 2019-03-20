@@ -40,3 +40,49 @@ let reactElement = {
   }
 
 }
+
+1. Element Factory
+It's quite cumbersome to need to create an object for every single react element we create. We can instead use the react helper function, React.createElement() which will automatically add the $$type and ref attributes for our elements each time we call them
+
+Instead of the object we create before, we can type:
+
+let anotherElement = React.createElement(
+  "p",
+  null,
+  "A nice text paragraph"
+)
+
+The inputs are: 1. the type of element to create, 2. The props of the event including: event handlers, styles, dynamic data (must be null if no elements are used), 3. The children of the element such as text nodes, you can add another react element here to do classic DOM nesting.
+
+A more complex example:
+let reactElement = React.createElement(
+  // Type of element
+  "h1",
+  // All of our props excluding our children
+  {
+    // Classes to attach to element
+    className: "abc",
+    // Styles of the element
+    style: {
+      textAlign: "center"
+    },
+    // Event handlers
+    onClick: function(){
+      alert("click");
+    }
+  },
+  // Child element aka text node in this case
+  "Hello, world!"
+)
+
+// The normal object notation form of this example is the example above!
+
+Quiz 3
+1. What are the three arguments the React.createElement() function accepts?
+  1. Type of element, h1, p, etc 
+  2. Props of the element 
+  3. Children of the element, can be a text node or another element entirely 
+2. What does the React.createElement() function return?
+  React element objects 
+3. What does the React.createElement add that we need to do manually when using element objects
+  Special identifiers such as $$typeof and ref 
