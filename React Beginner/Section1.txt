@@ -1,0 +1,42 @@
+Quiz 1
+
+1. What are the two problems React tries to solve?
+Adding dynamic data and user interactions to update our HTML; to pass data to react and recieve HTML views as a result. 
+2. What is the main difference between React and jQUery?
+jQuery uses queries to manipulate the DOM directly, this is an issue because it results in tons of lines and very slow code without optimized algorithms. React, on the otherhand, uses a virtual DOM (VDOM) which is a series of javascript objects that resemble the structure of the real DOM. React replaces the entire DOM but has optimizations set to make it incredibly fast.
+3. How does React simplify your code?
+React makes code alot simpler because queries do not have to be used directly. The addition of JSX also makes code more readable. 
+
+Quiz 2
+1. What JavaScript language construct is used to implement virtual DOM elements in React?
+objects
+2. What field is used in React to set a class for the elements?
+className: {}, because class is a reserved word in javascript 
+3. How are interactions implemented in React?
+With synthetic user event handlers such as onClick, OnKeydown, etc. These allow us to add event handlers to objects we created.
+
+How actual React objects look like (VDOM elements):
+let reactElement = {
+  // the $$typeof property tells react that this object is a react element that react should use to create an element
+  $$typeof:magicValue,
+  // the ref property holds a reference to the corresponding DOM element after the react element is rendered to the DOM, if we arent using it, it must be set to null.
+  ref: null,
+  // the type property defines the HTML- tag we want to generate
+  type: "h1",
+  // The props property defines properties that get passed down to the element
+  props: {
+    // We are passing down a text node here as a child
+    children:"Hello, world!",
+    // passing a class to the element 
+    className: "abc",
+    // Adding CSS styles
+    style:{
+      textAlign: "center"
+    },
+    // Adding event handlers via synthetic events:
+    onCLick: function(event){
+      alert(`${event.target} has been clicked`);
+    }
+  }
+
+}
