@@ -139,3 +139,71 @@ Babel, a compiler.
 Normal javascript code in the form of a React.createElement() function call 
 3. How can we execute regular JavaScript inside JSX?
 By placing the regular JavaScript in curly braces such as <h1>{isMale? "Hey bro" : "Hi girlbro";} </h1>
+
+
+Part 3 - Nested elements
+One of the most powerful features of JSX is its ability to nest elements 
+
+I. Nesting with Pure JSX
+  To regularly nest without JSX, we would have to do something like this:
+  React.createElement(
+    "p",
+    null,
+    React.createElement(
+      "strong",
+      null,
+      "Bold text"
+    )
+    );
+  Doing this several times would make our code difficult to read and incredibly long, especially in long production applications. 
+With JSX we can instead do this:
+
+<p> <strong>Bold text</strong> </p>
+
+For elements with multiple children:
+<p> Hi <strong>Bold text</strong> ! </p>
+Since there isn't further nesting, the react.createElement() call would look like this:
+
+React.createElement(
+  "p",
+  null,
+  "Hi ",
+  React.createElement("strong",null,"Bold Text"),
+  "!"
+)
+As you can see, if an element has multiple children, we simply add them as extra arguments into the createElement function 
+
+II. Nesting with JavaScript
+We can insert JavaScript into JSX using curly braces so we can also nest with JavaScript in JSX!
+Example 
+///////////////////
+let myClass = "abc";
+
+function myText() {
+  return "world";
+}
+
+let reactElement = (
+  <div className={myClass}>
+    <h1>Hello {10*10}</h1>
+    <h2>{myText()}</h2>
+  </div>
+)
+///////////////////
+
+The above renders the following HTML:
+<div class="abc">
+  <h1>Hello 100</h1>
+  <h2>world</h2>
+</div>
+
+NOTE, if we use JavaScript in JSX it MUST have some value. We cannot pass statements or functions that do not return a value! Instead of statements, the ternary operator is highly preferred!
+
+Nesting allows us to create complex element structures without losing flexibility that comes with templating languages. JSX lets us use the full power of JavaScript while templating languages limit JavaScript usage!
+
+1. What do nested JSX elements compile to?
+A React.createElement with another React.createElement call given as one of its child arguments (third argument onward)
+2. Can JavaScript be used inside JSX's curly braces?
+Yes
+
+Part 4 - Components
