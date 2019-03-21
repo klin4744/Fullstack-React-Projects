@@ -17,7 +17,7 @@ With synthetic user event handlers such as onClick, OnKeydown, etc. These allow 
 
 How actual React objects look like (VDOM elements):
 let reactElement = {
-  // the $$typeof property tells react that this object is a react element that react should use to create an element
+  // the $$typeof property tells react that this object is a react element and that react should use it to create an element
   $$typeof:magicValue,
   // the ref property holds a reference to the corresponding DOM element after the react element is rendered to the DOM, if we arent using it, it must be set to null.
   ref: null,
@@ -34,7 +34,7 @@ let reactElement = {
       textAlign: "center"
     },
     // Adding event handlers via synthetic events:
-    onCLick: function(event){
+    onClick: function(event){
       alert(`${event.target} has been clicked`);
     }
   }
@@ -44,7 +44,7 @@ let reactElement = {
 1. Element Factory
 It's quite cumbersome to need to create an object for every single react element we create. We can instead use the react helper function, React.createElement() which will automatically add the $$type and ref attributes for our elements each time we call them
 
-Instead of the object we create before, we can type:
+Instead of the object we created before, we can type:
 
 let anotherElement = React.createElement(
   "p",
@@ -52,7 +52,7 @@ let anotherElement = React.createElement(
   "A nice text paragraph"
 )
 
-The inputs are: 1. the type of element to create, 2. The props of the event including: event handlers, styles, dynamic data (must be null if no elements are used), 3. The children of the element such as text nodes, you can add another react element here to do classic DOM nesting.
+The inputs are: 1. the type of element to create, 2. The props of the element including: event handlers, styles, dynamic data (must be null if no props are used), 3. The children of the element such as text nodes, you can add another react element here to do classic DOM nesting.
 
 A more complex example:
 let reactElement = React.createElement(
@@ -86,3 +86,48 @@ Quiz 3
   React element objects 
 3. What does the React.createElement add that we need to do manually when using element objects
   Special identifiers such as $$typeof and ref 
+
+
+  Part 2 - JSX
+  JSX is React's version of template languages used to create markup that embedds HTML with JavaScript. It does however come with a major drawback: it needs an extra compiling step to run in a browser. If we want to use JSX with react, we must use a JavaScript compiler like Babel which usually compiles newer JavaScript code to earlier versions that is useable by all browsers. In the JSX case, Babel compiles our JSX code down to regular JavaScript such as the React.createElement() calls we used before.
+
+  To setup Babel, we need to include the babel compiler into our application by adding it through a script tag then instructing babel to compile our JSX to javascript:
+
+  Babel script tag:
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js">
+
+  In order to instruct babel to compile our custom JSX code, we must write our JSX inside a separate script tag formatted like this:
+  <script type="text/babel">
+  your code 
+  </script>
+  or
+  <script type="text/babel" src="index.js" />
+
+  Writing JSX 
+  let anotherElement = <p>A nice text paragraph</p>;
+
+  the above is compiled to the following:
+  anotherElement = React.createElement(
+    "p",
+    null,
+    "A nice text paragraph"
+  );
+
+  Creating complex elements
+  JSX lets us create complex elements, not just the base HTML tags we're used to. If we use lowercase tags, babel will pass the corresponding string to React.createElement(), such as: if we write <p></p>, babel will pass the string "p" to create a paragraph element. We can however create custom elements by passing uppercase elements, this will pass a variable to the function call. This lets us create custom elements such as: <CustomElement />. We can also insert the tags we put into React.createElement by passing them like HTML tags <CustomElement style={{backgroundColor: "red"}} />, if no props are passed, null will be passed in the createElement function call.
+
+  Example:
+  let reactElement = (
+    <h1 className="abc" style={{ textAlign: "center" } onClick={function(){
+      alert("click");
+    }}}>
+    Hello, world!
+    </h1>
+  )
+  Note that we can embedd javascript directly in JSX using curly braces
+
+  We can also pass in custom props via propName="value", these props can be passed down to embedded elements.
+
+Another example of using Javascript with JSX:
+<h1>{loggedIn ? `Hello {userName}!` : "Please sign in!"}</h1>
+This will render hello username if the used is logged in or please sign in if they aren't into an h1 tag!
