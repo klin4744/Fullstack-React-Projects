@@ -207,3 +207,80 @@ A React.createElement with another React.createElement call given as one of its 
 Yes
 
 Part 4 - Components
+
+I. Functional components - basic stateless components. Basically a simple function with an uppercase name that contains some JSX code.
+
+Instead of storing our components in variables as we've done before, we can create a functional component. This solves two problems, if we want to use the element in some other JSX code, we do not have to use curly braces and the data isnt encapsulated.
+
+Example:
+** Note the same of the component MUST start with uppercase or we CANNOT use it without curly braces in JSX 
+
+let MyComponent = () => {
+  let data = "world";
+  return(
+    <div>
+      <h1>Hello</h1>
+      <h2>{data}</h2>
+    </div>
+  )
+}
+
+Remember that Babel looks at the casing of the first letter of the JSX and passes it into React.createElement() either as a string if it's lowercase or as a variable if it is uppercase. In this case it passes a variable which is a reference to the functional component MyComponent.
+
+When we create components we can then reuse them in JSX. For example, we can now do something like this:
+
+<div className="greeting">
+  <div>Here is a greeting:</div>
+  <MyComponent/>
+</div>
+
+renders as:
+<div class="greeting"> 
+  <div>Here is a greeting:</div> 
+  <div> 
+    <h1>Hello</h1> 
+    <h2>world</h2> 
+  </div> 
+</div>
+
+We can create a ton of these components and give them special logic and use them as the building blocks of our page.
+
+In React, the general rule of thumb is to keep each component in it's own file and import it into another file if we ever need to use it. Typically the variable name of the import would be the same as the name of the file. REMEMBER to use UpperCases!
+
+Note: if we do use Uppercases, aka components, they must satisfy two requirements:
+
+1. There must exist a variable within the scope the the JSX calling that component, aka if the JSX <MyComponent/> appears on the page, there must exist a variable on the page called MyComponent that is either imported or hard coded on the page 
+2. The variable MUST be a function that returns an element, an array of elements or null.
+
+Returning a list of elements
+If we want to render a list of elements we can return the elements in an array or in a React.Fragment
+
+Example
+function MyComponent(){
+  let data = "world";
+  return [<h1 key="hello">Hello</h1>, <h2 key="data">{data}</h2>];
+
+}
+
+if we do this, each element must have a unique key property which will help React determine the position of multiple elements in one array. This means if we change on element in the array, React can directly access that element via key rather than replacing every single element. 
+
+We can also use React.Fragment instead of an array if we want to return multiple elements and do not want to keep track of key props or use commas:
+function MyComponent(){
+  let data = "world";
+  return(
+    <React.Fragment>
+      <h1>Hello</h1>
+      <h2>{data}</h2>
+    </React.Fragment>
+  )
+}
+
+Quiz
+1. What improvement do functional components bring over regular functions that return elements?
+Functional components let us create reusable custom elements that can be integrated into JSX without curly braces and allow for the encapsulation of component-specific data or elements. 
+
+2. What's the major constraint of a components name?
+All components must start with an uppercase letter or babel will pass it into React.createElement() as a string and not as a reference to the actual component
+ 
+3. What do arrays of element need to be updated efficiently by React?
+All the elements within an array must have a unique key property so that React can directly access it in the case that the user changes that specific piece of data. This allows React to update without changing all the other data as well. 
