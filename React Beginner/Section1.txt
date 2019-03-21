@@ -131,3 +131,11 @@ Quiz 3
 Another example of using Javascript with JSX:
 <h1>{loggedIn ? `Hello {userName}!` : "Please sign in!"}</h1>
 This will render hello username if the used is logged in or please sign in if they aren't into an h1 tag!
+
+Quiz
+1. What extra tool is needed to run JSX code?
+Babel, a compiler. 
+2. To what JavaScript construct is a JSX element compiled to?
+Normal javascript code in the form of a React.createElement() function call 
+3. How can we execute regular JavaScript inside JSX?
+By placing the regular JavaScript in curly braces such as <h1>{isMale? "Hey bro" : "Hi girlbro";} </h1>
