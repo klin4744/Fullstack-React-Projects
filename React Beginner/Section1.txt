@@ -281,6 +281,110 @@ Functional components let us create reusable custom elements that can be integra
 
 2. What's the major constraint of a components name?
 All components must start with an uppercase letter or babel will pass it into React.createElement() as a string and not as a reference to the actual component
- 
+
 3. What do arrays of element need to be updated efficiently by React?
 All the elements within an array must have a unique key property so that React can directly access it in the case that the user changes that specific piece of data. This allows React to update without changing all the other data as well. 
+
+Part 5 - Props 
+In this section we will learn how to pass data from outside into a component 
+
+I. Call-Site Props 
+
+We already used props previously
+<p className="black-text style={{ fontSize: 42}}></p>
+in this case, the properties className and style are both props, properties of the element passed into React.createElement()
+
+Note, we can also pass props into custom elements we create 
+
+let reactElement = <MyComponent className="abc" customData="world" />
+
+Note: we can pass more than strings as props, if we use curly braces we can pass all kinds of data structures and data types. 
+
+These props that look like regular HTML properties are called call-site props. This means that these props are at the area that calls our component in JSX;they are embedded in the area where we call the component!
+
+II. Definition-site Props
+We can use props inside components like this:
+
+function MyComponent(props){
+  return(
+    <div className={props.className}>
+      <h1>Hello</h1>
+      <h2>{props.customData}</h2>
+    </div>
+  )
+}
+
+All functional components recieves a props objects which is passed to the React.createElement() function as its first argument
+
+III. Default Props 
+We can also declare default properties as follows:
+MyComponent.defaultProps = {
+  customData: "default-data",
+  className: "default-class"
+}
+
+IV. Customizing Components with Props 
+Props allows us to re-use components and give them special configurations: 
+
+
+// Definition, Here we definte a button prop and use a switch to change a certain property based on the props it recieves 
+function Button(props) { 
+  var style = { 
+    color: "white", backgroundColor: "red"
+     };
+
+switch (props.size) {
+   case "s": 
+    style.height = 30; 
+    style.width = 50; 
+    break; 
+  case "l": 
+    style.height = 50; 
+    style.width = 100; 
+  break; 
+  default: 
+    style.height = 40; 
+    style.width = 75; 
+  }
+return ( 
+  <button style={style} onClick={props.onClick}> Click Me! </button> );
+}
+// Usage - Here we are calling the button component but using a different size prop to render different types of buttons
+<Button size="s" onClick={function() { alert("!!!"); }} /> 
+<Button onClick={function() { alert("!!!"); }} /> <Button size="l" onClick={function() { alert("!!!"); }} />
+V. Special Cases 
+There are two special cases for props usage:
+  1. Boolean Props 
+     If we do not define a value for a prop, it will get the value true. This is similar to regular html properties.
+
+     Example
+     <MyComponent active />
+
+     becomes:
+
+     React.createElement(MyComponent, {active:true});
+  2. Props Spreading
+     We can use the javascript spread operator to spread an object onto a React component which allows for a dynamic amount of props to be passed to an element which can save us alot of time 
+
+     Example 
+     let props = {
+       className: "abc",
+       customData: "world"
+     }
+
+     reactElement = <MyComponent {...props} />
+
+     MyComponent gains the props className and customData!
+
+     We can use this in large applications where we dont necessarily want to use every prop and can instead use logic to decide what props to actually pass
+
+     - Props are used to pass state data from parent components to children 
+     - Function props are used to pass state from children to parents 
+     - React does NOT use two-way binding, data is transfered unidirectionally through props (parent -> child) or function calls (child -> parent)
+Quiz 
+1. What are props used for in React?
+Props are used to pass data from outside of a component into the component. More specifically, to transfer state from parent to child.
+2. Does React use two-way binding?
+NO, two-way binding does not exist in React. Data flow is unidirectional. Either state from parent to child via props or from child to parent through  function props. 
+3. What do function props accomplish in React?
+They pass state information back up to the parent component.
