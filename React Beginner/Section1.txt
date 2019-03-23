@@ -291,7 +291,7 @@ In this section we will learn how to pass data from outside into a component
 I. Call-Site Props 
 
 We already used props previously
-<p className="black-text style={{ fontSize: 42}}></p>
+<p className="black-text" style={{ fontSize: 42}}></p>
 in this case, the properties className and style are both props, properties of the element passed into React.createElement()
 
 Note, we can also pass props into custom elements we create 
@@ -327,7 +327,7 @@ IV. Customizing Components with Props
 Props allows us to re-use components and give them special configurations: 
 
 
-// Definition, Here we definte a button prop and use a switch to change a certain property based on the props it recieves 
+// Definition, Here we define a button prop and use a switch to change a certain property based on the props it recieves 
 function Button(props) { 
   var style = { 
     color: "white", backgroundColor: "red"
@@ -388,3 +388,68 @@ Props are used to pass data from outside of a component into the component. More
 NO, two-way binding does not exist in React. Data flow is unidirectional. Either state from parent to child via props or from child to parent through  function props. 
 3. What do function props accomplish in React?
 They pass state information back up to the parent component.
+
+Part 6 - Prop Types 
+We may want to prevent a user from using a component if they pass the wrong type of value into a prop. For example, we may want the user to pass a string to a prop but they pass an object which causes complications with rendering.
+
+React has a library for type checking at run time called prop types 
+
+You can include proptypes by adding a CDN:
+<script src="https://unpkg.com/prop-types@15.6.1/prop-types.js">
+
+OR by using npm 
+$npm i prop-types 
+
+I. Runtime Type Checking 
+The prop-types library adds a propTypes atribute to our component function which React will then use to validate all the props that are passed into our component.
+
+This validation will occur once the code with the passed props is executed; this is called runtime type checking. 
+
+II. Prop-Types for Functional Components 
+
+For the component:
+
+const myComponent = props => {
+  return(
+    <div className={props.className}>
+      <h1>Hello</h1>
+      <h2>{props.customData}</h2>
+    </div>
+  )
+}
+
+we expect customData to be of the type string since we are passing it to an h2, we can set this up with prop types by doing:
+
+MyComponent.propTypes = {
+  customData: PropTypes.string
+}
+// Here the keys passed are the props we want to check and the values are the validators that come with PropTypes 
+
+Here is a list of all valid propTypes we can check for with prop-types: https://www.npmjs.com/package/prop-types;
+
+If we supply the wrong prop type into the prop customData now, we will get the following runtime error:
+
+Warning: Failed prop type: Invalid prop `customData` of type `number` supplied to `MyComponent`, expected `string`.
+
+A more complicated example:
+function DateSpan(props){
+  let date = props.date,
+      day = date.getDate(),
+      month = data.getMonth() +1,
+      year = date.getFullYear();
+  
+  return(
+    <span>
+      {day}.{month}.{year}
+    </span>
+  )
+}
+For the above example nothing will be rendered if a prop of type date is not passed into our DateSpan component. Here a date prop of type date is absolutely required!
+
+Quiz
+1. At what time are prop-types checked?
+At runtime 
+2. Are prop-types part of React?
+Yes but they do not come with React by default, they must be installed through npm or via a cdn
+3. Do prop-types check or alarm you of code that isn't reached?
+If a prop doesn't match its required type a warning will be given.
