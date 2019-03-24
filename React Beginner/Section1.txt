@@ -453,3 +453,76 @@ At runtime
 Yes but they do not come with React by default, they must be installed through npm or via a cdn
 3. Do prop-types check or alarm you of code that isn't reached?
 If a prop doesn't match its required type a warning will be given.
+
+Part 7 - Nested Components 
+
+I. Call-Site Nesting
+  Let's explore how we can nest with React.createElement()
+
+  If we type the following JSX:
+  <p>
+    <em>Hello</em>, world! 
+  </p>
+
+  Babel will compile the following code:
+
+  React.createElement(
+    "p",
+    null,
+    React.createElement("em",null,"Hello"),
+    ", world!"
+  )
+
+  As we can see, adding a child element as an argument to another element will render that child element as a child node into the virtual DOM tree of that element. Here the string world becomes a sibling node to the nested element. This is how we'd nest elements with the React.createElement function.
+II. Definition-Site Nesting 
+How do we nest something inside a custom component we've create? To do this we must use the children prop which we can basically consider a reference to the content of our component. 
+
+function RedText(props){
+  return <p style={{color: "red"}}>{props.children}</p>
+}
+<RedText>Hello, world!</RedText>
+
+Our red text component renders its children as content into the paragraph tag 
+
+III. Nesting Components into Components 
+What we did above also works with components, not just other elements. For example:
+
+function Item(props){
+  return <li>{props.children}</li>;
+}
+function List(props){
+  return <ul>{props.children}</ul>;
+}
+List.defaultProps = {
+  children: <Item>Empty</Item>
+};
+
+let reactElement = (
+  <div>
+    <List />
+    <List>
+      <Item> First </Item>
+      <Item> Second </Item>
+      <Item> Third </Item>
+    </List>
+  </div>
+)
+
+In this example, the Item component renders its children into an li tag while the List component renders its children into a ul tag. Since we pass Item into List, Item is rendered as props.children for the list, so it is rendered like this:
+<ul>
+  <li> First </li>
+  ....
+</ul>
+
+The Children Prop is very unique and can have many types. If the component is passed one child, the children prop holds a reference to the one child passed. If the component is passed multiple children, the children prop will hold a data-structure that holds all the child elements, a child collection. It can also be undefined if nothing is passed into it. 
+  - We can run utility methods such as .map(), .count(), and .toArray() on the React.Children object to work with the content of the prop without worrying about its actual content 
+
+Quiz 
+  1. How are nested elements accessed inside a component?
+  Through that components children prop; aka by accessing props.children for that component 
+  2. How are children different from props?
+  Children is a special type of prop that is passed into the component that makes it modular by adding connections between components, replicating a virtual DOM tree. 
+  3. Can children have different types?
+  Yes, it can be a child collection of multple children, a reference to one child, or undefined.
+
+
