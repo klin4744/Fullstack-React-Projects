@@ -606,3 +606,77 @@ Create React class
 State 
 3. What are the two versions of the setState() method?
 You can pass either a function or a callback that recieves previous state and props at the time that the callback is called
+
+Part 9 - Lifecycle Methods 
+Lifecycle methods are methods that allow us to execute actions at particular times. For example, we can execute code before anything renders from the render method of a class component.
+  - Lifecycle methods can only be used on class components 
+The two most important methods in React are componentDidMount() and componentWillUnmount()
+
+I. The componenetDidMount() Method 
+The component "mounts" on our DOM after it is first rendered on the DOM. Thus the componentDidMount() method executes right after the first time the render() method is called.
+
+The most important use-cases for this method are:
+  - Fetching asynchronous data
+  - Setting up event listeners 
+
+  Example of usage:
+  
+  let AsyncHelloWorld = createReactClass({
+    getInitialState: function(){
+      return {data: null};
+    },
+    componenetDidMount: function(){
+      let self = this;
+      // NOTE, we have to declare self and set it to this here because the "this" keyword inside of the setTimeout function references one level up aka to the componentDidMount function and not the AsyncHelloWorld class!
+      setTimeout(function(){
+        self.setState({data: "Hello, world!"});
+      }, 2000);
+    },
+    render: function(){
+      let data = this.state.data;
+      return data ? <p>{data}</p> : <p>Loading...</p>;
+    }
+  })
+
+  Here the component is first rendered on the page the first time with an initial state.data equal to null. Since this value is null, the user first sees the text Loading..., when the page is finished rendering (mounts to DOM), the timeout function starts to run and after 2s we see the updated paragraph tag with Hello, world!
+
+The setTimeout function here is usually an API call which will populate the SPA after data is retrieved from a database/API. 
+
+II. The componentWillUnmount() Method 
+This method will be called by React right before the component is removed from the DOM. 
+
+The main use-case for this is cleanup
+
+Example:
+let AsyncCounter = createReactClass({
+  getInitialState: function(){
+    return {count: 0};
+  },
+  incrementCounter: function(){
+    this.setState(function(previousState){
+      return {count: previousState.count++ };
+    });
+  },
+  interval: null,
+  componentDidMount: function(){
+    this.interval = setInterval(this.incrementCounter,100)
+  },
+  componentWillUnmount: function(){
+    clearInterval(this.interval);
+  },
+  render: function(){
+    return(
+      <p>Count: {this.state.count}</p>;
+    )
+  }
+})
+
+When the state is changed from setInterval inside the component did mount method, the page is re-rendered with the new state which pulls the component off of the page. The componentWillUnmount function clears the interval set by componentDidMount before the page re-renders preventing any more changes to state before a re-render
+
+1. When is the componenetDidMount() lifecycle method called?
+It is called right after the component is first rendered on the page
+2. When is the componentWillUnmount() lifecycle method called?
+It is called right before the component is unmounted or removed from the page 
+3. What are the use-cases for the componentDidMount() Method?
+  -Setting up event handlers 
+  -Waiting for asynchronous data 
