@@ -525,4 +525,76 @@ Quiz
   3. Can children have different types?
   Yes, it can be a child collection of multple children, a reference to one child, or undefined.
 
+  Part 8 - Class Components
+  Functional components are fine for most parts of any application but they are very limited in what they can do. Functional components can only use their props to change their behavior; props which have to come from some parent component. 
 
+  Logically speaking, since these props have to come from a parent component, they have to be created somewhere up the line; from some parent component. 
+
+  I. Class Components 
+  State - an internal dataset which affects the rendering of a component. State in a way can be considered the private data of a specific component. It can be passed down to children of that component as a prop. Changing state will change how that component is rendered.
+
+  Components that have state, stateful components, are called class components. We can create these components by creating a class rather than creating a function.
+
+  Example:
+  A good example of a stateful component is a component that keeps track of a counter that can be incremented when a button is clicked. 
+
+  We can create a functional component called counter that recieves the current counts as a prop from its parent: 
+
+  function Counter(props){
+    return(
+      <div> 
+      // We recieve the prop count from the state of some parent component 
+        <span>{props.count}</span>
+      // Clicking this button triggers an event call that passes data UP to a parent component, telling it that the user wants to increment the state property count by 1. 
+        <button onClick={props.onClick}> +1 </button>
+      </div>
+    );
+  }
+  // Since this is a FUNCTIONAL component, it does not have any way of storing data (state) and thus must interact with data from a parent component. 
+
+  Notice that this component cannot stand alone, it absolutely needs a parent component to render a count and interact with the user since it cannot store its own data. 
+
+  We can instead create a stateful component (class component) like this: 
+
+  let Counter = createReactClass({
+    getInitialState: function(){
+      return { count: 0}
+    },
+    handleClick: function (event){
+      this.setState(function(prevState){
+        return {count: prevState.count + 1};
+      })
+    },
+    render: function(){
+      return(
+        <div>
+          <span>{this.state.count}</span>
+          <button onClick={this.handleClick}> +1 </button>
+        </div>
+      )
+    }
+  })
+
+II. The createReactClass() function 
+
+createReactClass is the ES5 way of creating class components in React. As of version 16, this way of creating class components is removed and must be included through a cdn or npm 
+
+$npm i create-react-class 
+OR 
+<script src="https://unpkg.com/create-react-class@15.6.3/create-react-class.js">
+
+This function returns a new component class 
+
+III. The render() methods
+THe createReactClass() function takes a config objects that needs to define a few functions. The most important function that must be defined is the render() method. You'll notice that this method looks very much like a functional component. The render method simply renders JSX for our component. Since it is a method embedded in an object, you must use the this keyword to access both its props and its state (this.props or this.state)
+
+IV. The getInitialState() method
+getInitialState() is a method that gets called when an instance of the component is created, right before the render() method is called. This method must return a value that defines the state of our component. This state is then availible for use in our render method with this.state. Note: state is generally an object because objects allow easy access via key value pairs but it can really be anything.
+
+V. Interaction 
+We interact with the state in this example by clicking on the button which has a click handler which triggers the custom method handleClick that we wrote. You'll notice this function calls the setState function which is a method provided by React.
+
+VI. The setState() Method 
+The setState() method can be called with an object or a callback function like we used above. It lets us update or change our state AND trigger the render method to be called again after the state is changed. This allows for our components to react to its current state. If we call setState with an object, the object gets merfed with the current object inside this.state. If we call it with a callback function, the callback recieves the previous state as an argument and returns a new value that is merged with this.state.
+
+*** ONLY call setState() with an object if the new state doesn't depend on the previous state. The callback version allows for asynchronous functionality. The page will only re-render once the callback is finished executing and other things can be done while it is waiting whereas the object method will trigger immediate re-renders before we even know what the new state is. 
