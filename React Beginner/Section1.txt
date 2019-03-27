@@ -680,3 +680,27 @@ It is called right before the component is unmounted or removed from the page
 3. What are the use-cases for the componentDidMount() Method?
   -Setting up event handlers 
   -Waiting for asynchronous data 
+
+Part 10 - Pomodoro Timer  
+A pomodoro timer helps divide time into two time-chunks:
+
+1. A work time of 25 minutes
+2. A puase time of 5 minutes 
+
+The use-case:
+1. The user starts the timer and then they do some work for 25 minutes 
+2. The timer automatically switches to a pause mode where the user has to pause for 5 minutes 
+3. The timer switches back to work and the cycle restarts
+4. The user can stop the timer at any time 
+
+I. Implementation
+We will create three components for this app 
+  1. PomodoroApp - The root component of our app 
+  2. Timer - The component that counts down for a specific duration
+  3. Idle - The component that is displayed when the timer isn't running 
+The HTML structure of our app will look like the following:
+<div style="display: flex; flex-direction: column; align-items: center;">
+  <h1>Pomodoro Timer</h1>
+  <button>Start timer</button>
+  <h2>No Timer Running.</h2>
+</div>
