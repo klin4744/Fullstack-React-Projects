@@ -704,3 +704,186 @@ The HTML structure of our app will look like the following:
   <button>Start timer</button>
   <h2>No Timer Running.</h2>
 </div>
+
+Breaking down our components:
+
+I. The idle component - A more or less static page that just displays text and a button. This page does not require state management so we can make it a regular functional component 
+
+let idle => props => {
+  return(
+    <React.Fragment>
+      <button onClick={props.onStart}>Start timer</button>
+      <h2>No Timer is Running. </h2>
+    </React.Fragment>
+  )
+}
+Notice that we pass the onClick event as we want a stateful component to update its state if this button is clicked. 
+
+NOTE - By wrapping in React.Fragment, we avoid rendering the element with a wrapping element like a div into the DOM. 
+
+II. The Timer Component 
+The timer component handles the actual timer count-down. Since it handles some kind of data (time),we must make it a stateful class component. 
+
+let timer = createReactClass({
+  // Setting up our state, we grab minutes from a parent component to calculate the seconds we need 
+  getInitialState: function(){
+    return { seconds: this.props.minutes * 60}
+  },
+  // We create an interval handler so we can stop the interval at will later on.
+  interval: null,
+  // When the component renders on the page, run countdown every second 
+  componentDidMount: () => {
+    this.interval = setInterval(this.countDown,1000);
+  },
+  // Right before the clock is taken off the page, remove the interval. If we do not do this, the method would continue to call setState even when the component is removed!
+  componentWillUnmount: () => {
+    clearInterval(this.interval);
+  },
+   // countdown method will decrement state.seconds everytime its called. State.seconds is below 1, the props.onFinish() function is executed 
+   countDown: function(){
+      let onFinish = this.props.onFinish;
+      this.setState( prevState => {
+        let secondsLeft = prevState.seconds -1;
+        if (secondsLeft < 1) return onFinish();
+
+        return { seconds: secondsLeft};
+      })
+    },
+    // Rendering our component
+  render: function(){
+    let seconds = this.state.seconds; // Grab current seconds
+    let minutes = Math.floor(seconds / 60); // Calculate minutes
+    seconds = seconds % 60; //remove the minutes from the seconds
+    return(
+      <React.Fragment>
+        <button onClick={this.props.onStop}>Stop timer </button>
+        <h2 style={{color: this.props.color}}>
+          {this.props.title} for {minutes} minutes and {seconds} seconds
+        </h2>
+      </React.Fragment/>
+    )
+  }
+})
+
+III. The PomodoroApp Component 
+This component handles the transition between the states of the timer and therefore should be a class component 
+
+The PomodoroApp component needs to keep track of two different types of state:
+  1. The current state of the timer 
+  2. The count of work timers that finished
+
+let pomodoroApp = createReactClass({
+  // The timer can be one of these 3 states, we always define states of a component in UPPER_CASE writing, which implies that they are constants 
+  IDLE: 0,
+  WORK: 1,
+  PAUSE: 2,
+
+  getInitialState: function(){
+    return({
+      // Since no work timers have finished at the begining, we can set count to 0
+      count:0,
+      // The app starts in the IDLE state
+      timerState: this.IDLE 
+    })
+  },
+  render: function(){
+    // Now integrate our other components 
+    let count = this.state.count;
+    let timerState = this.state.timerState;
+    let timerElement = <Idle onStart={this.handleWork} /> 
+    // If the timerState is on IDLE, we render the idle component and set it's onStart prop (connected to a button) to an event handler that starts a work-timer 
+    // If the timerState is in the WORK state, we use the Timer component and hood up the event handlers for onFinish and onStop so we can switch to other states 
+    // If the state is on PAUSE, we render the timer component but give it different props to resemble a pause-timer  
+    // Notice, if you want to use a component more than once in the same place (renders in the same place at different times), you must give each a unique key property to tell react they are different
+    if(timerState == this.WORK){
+      timerElement = (
+        <Timer key="work" title="work" color="orange" minutes={25} onFinish={this.handlePause} onStop={this.handleIdle} />
+      )
+    }else  if(timerState == this.PAUSE){
+      timerElement = (
+        <Timer key="pause" title="pause" color="green" minutes={5} onFinish={this.handleWork} onStop={this.handleIdle} />
+      )
+    }
+    return (
+      <div 
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center"
+        }}
+        >
+          <h1>Pomodoro Timer</h1>
+          {timerElement}
+          // The pomodoro component on its own will always show a title and the timer the user has worked, we do this by multiplying the number of runs by 25 since we know one work timer is 25mins. The !!count && prevents <h2> from being rendered if the count is zero. 
+          {!!count && <h2>You worked {count * 25} minutes today! </h2>}  
+        </div>
+    )
+  }
+
+})
+
+// We can refactor by moving all the handling to a function: 
+var PomodoroApp = createReactClass({
+  IDLE: 0,
+  WORK: 1,
+  PAUSE: 2,
+  getInitialState: function() {
+    return { count: 0, timerState: this.IDLE };
+  },
+  handleWork: function() { 
+    this.setState({ timerState: this.WORK });
+     },
+  handlePause: function() { 
+    this.setState(function(prevState) {
+    return { 
+        count: prevState.count + 1, 
+        timerState: this.PAUSE 
+      }; 
+  }); 
+},
+  getTimerElement: function() {
+    var timerState = this.state.timerState;
+    if (timerState == this.PAUSE)
+      return (
+        <Timer
+          key="pause"
+          title="Pause"
+          color="green"
+          minutes={5}
+          onFinish={this.handleWork}
+          onStop={this.handleIdle}
+        />
+      );
+    if (timerState == this.WORK)
+      return (
+        <Timer
+          key="work"
+          title="Work"
+          color="orange"
+          minutes={25}
+          onFinish={this.handlePause}
+          onStop={this.handleIdle}
+        />
+      );
+    return <Idle onStart={this.handleWork} />;
+  },
+  handleIdle: function() { 
+      this.setState({ 
+        timerState: this.IDLE 
+      }); 
+    },
+  style: { display: "flex", flexDirection: "column", alignItems: "center" },
+  render: function() {
+    var count = this.state.count;
+    return (
+      <div style={this.style}>
+        {" "}
+        <h1>Pomodoro Timer</h1>
+        {this.getTimerElement()}{" "}
+        {!!count && <h2>You worked {count * 25} minutes today!</h2>}{" "}
+      </div>
+    );
+  }
+});
+
+Addiitonally, we must add two methods to cause state changes: handleWork() which switches the timerState to work, handlePause() which sets the timerState to pause and increments the count so we can show how many work timers have finished, and  handleIdle() 
